@@ -1,8 +1,7 @@
-scikit-learn == 1.4.0
 numpy == 1.26.4
 opencv-python == 4.9.0.80
-keras == 3.1.1
 mediapipe == 0.10.11
 tensorflow == 2.16.1
-matplotlib == 3.8.3
-pillow==10.2.0
+keras == 3.1.1
+pillow~=10.3.0
+matplotlib~=3.8.3

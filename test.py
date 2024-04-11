@@ -112,6 +112,7 @@ while cap.isOpened():
     b, g, r, a = 0, 0, 255, 255
     draw = ImageDraw.Draw(img_pillow, 'RGBA')
     draw.text((200, 70), "텍스트를 삽입합니다.", font=font, fill=(b, g, r, a))
+    cv2.rectangle(frame, (10, 20), (20, 40), (0, 0, 255))
 
     cv2.imshow('frame', frame)
     if cv2.waitKey(1) == ord('q'):
