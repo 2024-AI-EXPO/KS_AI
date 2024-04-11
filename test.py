@@ -23,15 +23,15 @@ cap = cv2.VideoCapture(0)
 seq = []
 # 세 개의 액션이 같으면 그 동작을 출력
 action_seq = []
-action_result = []
 this_action = ''
 
 
 def draw_korean(image, org, text):
     img = Image.fromarray(image)
     draw = ImageDraw.Draw(img)
-    font = ImageFont.truetype('fonts/gulim.ttc', 20)
-    draw.text(org, text, font=font, fill=(0, 0, 0))
+    font = ImageFont.truetype('fonts/gulim.ttc', 40)
+    draw.text(org, text, font=font, fill=(255, 255, 255))
+    return np.array(img)
 
 
 while cap.isOpened():
@@ -90,34 +90,15 @@ while cap.isOpened():
             if len(action_seq) < 4:
                 continue
 
-            # 여기는 나중에 수정해본다.
-
             if action_seq[-1] == action_seq[-2] == action_seq[-3] == action_seq[-4]:
                 this_action = action
                 action_seq = []
-                action_result.append(this_action)
 
-    # cv2.putText(
-    #     frame,
-    #     text=f'{this_action.upper()}',
-    #     org=(60, 450),
-    #     fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-    #     fontScale=1,
-    #     color=(255, 255, 255),
-    #     thickness=3
-    # )
-    img_pillow = Image.fromarray(frame)
-    fontpath = "fonts/gulim.ttc"
-    font = ImageFont.truetype(fontpath, 24)
-    b, g, r, a = 0, 0, 255, 255
-    draw = ImageDraw.Draw(img_pillow, 'RGBA')
-    draw.text((200, 70), "텍스트를 삽입합니다.", font=font, fill=(b, g, r, a))
-    cv2.rectangle(frame, (10, 20), (20, 40), (0, 0, 255))
-
+    frame = draw_korean(frame, (80, 430), this_action)
     cv2.imshow('frame', frame)
+
     if cv2.waitKey(1) == ord('q'):
         break
 
-print(action_result)
 cap.release()
 cv2.destroyAllWindows()
