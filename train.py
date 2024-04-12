@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from keras.utils import to_categorical
 from keras.models import Sequential
-from keras.layers import LSTM, Dense, Dropout, Input, Conv1D, MaxPool1D, Flatten
+from keras.layers import LSTM, Dense, Dropout, Input, Flatten
 from keras.initializers import Orthogonal
 from sklearn.model_selection import train_test_split
 from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau
@@ -11,7 +11,7 @@ from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau
 os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 
-actions = ["hello", "thankYou", "mind", "person"]
+actions = ["hello", "thanks", "sorry", "hate", "mind", "person", "thinking", "friend", "school"]
 path = 'dataset_KSL'
 data = np.concatenate([np.load(path + f'/seq_{action}.npy') for action in actions], axis=0)
 
@@ -30,27 +30,17 @@ dr = 0.4
 model = Sequential()
 model.add(Input(x_train.shape[1:]))
 
-# cnn
-model.add(Conv1D(64, 3, activation='relu', kernel_initializer=initializers))
-model.add(MaxPool1D(pool_size=2))
-model.add(Conv1D(128, 3, activation='relu', kernel_initializer=initializers))
-model.add(MaxPool1D(pool_size=2))
-
 # lstm
 model.add(LSTM(128, return_sequences=True, kernel_initializer=initializers))
 model.add(Flatten())
 
 # FC
-model.add(Dense(128, activation='relu', kernel_initializer=initializers))
-model.add(Dropout(dr))
 model.add(Dense(64, activation='relu', kernel_initializer=initializers))
 model.add(Dropout(dr))
 model.add(Dense(len(actions), activation='softmax', kernel_initializer=initializers))
 
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 model.summary()
-
-folder_path = 'C:/Users/user/Downloads/AI-test-code/Mediapipe-Test/'
 
 history = model.fit(
     x_train,
@@ -59,7 +49,7 @@ history = model.fit(
     epochs=125,
     batch_size=32,
     callbacks=[
-        ModelCheckpoint(folder_path + 'models/model_KSL.keras', verbose=1, save_best_only=True, mode='auto'),
+        ModelCheckpoint('models/model_KSL2.keras', verbose=1, save_best_only=True, mode='auto'),
         ReduceLROnPlateau(factor=0.5, patience=50, verbose=1, mode='auto')
     ]
 )

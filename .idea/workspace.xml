@@ -4,32 +4,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2bc15fb1-9862-42a7-aa00-d05b25cfaa50" name="Changes" comment="">
+    <list default="true" id="2bc15fb1-9862-42a7-aa00-d05b25cfaa50" name="Changes" comment="한글 표시">
       <change beforePath="$PROJECT_DIR$/.idea/KS_AI.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/KS_AI.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mediapipe-Test/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mediapipe-Test/.idea/Mediapipe-Test.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mediapipe-Test/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mediapipe-Test/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mediapipe-Test/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mediapipe-Test/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mediapipe-Test/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mediapipe-Test/create_dataset.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mediapipe-Test/dataset_KSL/raw_hello.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mediapipe-Test/dataset_KSL/raw_mind.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mediapipe-Test/dataset_KSL/raw_person.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mediapipe-Test/dataset_KSL/raw_thankYou.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mediapipe-Test/dataset_KSL/seq_hello.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mediapipe-Test/dataset_KSL/seq_i'm sick.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mediapipe-Test/dataset_KSL/seq_mind.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mediapipe-Test/dataset_KSL/seq_person.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mediapipe-Test/dataset_KSL/seq_question.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mediapipe-Test/dataset_KSL/seq_thankYou.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mediapipe-Test/models/model_KSL.keras" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mediapipe-Test/multi_create_dataset.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mediapipe-Test/requirements.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mediapipe-Test/test.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mediapipe-Test/train.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset_KSL/raw_hello.npy" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset_KSL/raw_mind.npy" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset_KSL/raw_person.npy" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset_KSL/raw_thankYou.npy" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset_KSL/seq_hello.npy" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset_KSL/seq_i'm sick.npy" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset_KSL/seq_mind.npy" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset_KSL/seq_person.npy" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset_KSL/seq_question.npy" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset_KSL/seq_thankYou.npy" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/multi_create_dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/multi_create_dataset.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/train.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -70,6 +61,28 @@
       <option name="presentableId" value="Default" />
       <updated>1712746729142</updated>
     </task>
+    <task id="LOCAL-00001" summary="파일 경로 변경">
+      <option name="closed" value="true" />
+      <created>1712823551828</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1712823551828</updated>
+    </task>
+    <task id="LOCAL-00002" summary="한글 표시">
+      <option name="closed" value="true" />
+      <created>1712829976211</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1712829976211</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="파일 경로 변경" />
+    <MESSAGE value="한글 표시" />
+    <option name="LAST_COMMIT_MESSAGE" value="한글 표시" />
   </component>
 </project>

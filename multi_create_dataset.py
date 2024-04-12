@@ -4,8 +4,8 @@ import time
 import numpy as np
 import mediapipe as mp
 
-actions = ["hello", "thankYou", "mind", "person"]  # 원하는 동작 설정
-seq_length = 30
+actions = ["hello", "thanks", "sorry", "hate", "mind", "person", "thinking", "friend", "school"]  # 원하는 동작 설정
+seq_length = 9
 secs_for_action = 30  # 최대 학습 시간
 
 # mediapipe에 있는 hands 모델
@@ -38,7 +38,7 @@ while cap.isOpened():
             thickness=3
         )
         cv2.imshow('frame', frame)
-        cv2.waitKey(10000)
+        cv2.waitKey(6000)
 
         start_time = time.time()
 

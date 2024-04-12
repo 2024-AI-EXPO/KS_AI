@@ -4,9 +4,9 @@ import numpy as np
 from keras.models import load_model
 from PIL import ImageFont, ImageDraw, Image
 
-actions = ["안녕하세요", "감사합니다", "마음", "휴먼"]
-seq_length = 30
-model = load_model('models/model_KSL.keras')
+actions = ["안녕하세요", "감사합니다", "미안합니다", "싫어합니다", "마음", "휴먼", "생각", "친구", "학교"]
+seq_length = 9
+model = load_model('models/model_KSL2.keras')
 
 # mediapipe 기본 설정
 mp_hands = mp.solutions.hands
@@ -14,7 +14,8 @@ mp_drawing = mp.solutions.drawing_utils
 hands = mp_hands.Hands(
     max_num_hands=2,
     min_detection_confidence=0.5,
-    min_tracking_confidence=0.5
+    min_tracking_confidence=0.5,
+    model_complexity=1
 )
 
 cap = cv2.VideoCapture(0)
