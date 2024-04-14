@@ -11,8 +11,8 @@ from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau
 os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 
-actions = ["hello", "thanks", "sorry", "hate", "mind", "person", "thinking", "friend", "school"]
-path = 'dataset_KSL'
+actions = ["YOUR", "ACTION"]
+path = "YOUR_DIR"
 data = np.concatenate([np.load(path + f'/seq_{action}.npy') for action in actions], axis=0)
 
 x_data = data[:, :, :-1]
@@ -23,18 +23,15 @@ y_data = y_data.astype(np.float32)
 
 x_train, x_val, y_train, y_val = train_test_split(x_data, y_data, test_size=0.2, random_state=2024)
 
-# 초기화 방법
 initializers = Orthogonal(gain=1.0, seed=None)
 dr = 0.4
 
 model = Sequential()
 model.add(Input(x_train.shape[1:]))
 
-# lstm
 model.add(LSTM(128, return_sequences=True, kernel_initializer=initializers))
 model.add(Flatten())
 
-# FC
 model.add(Dense(64, activation='relu', kernel_initializer=initializers))
 model.add(Dropout(dr))
 model.add(Dense(len(actions), activation='softmax', kernel_initializer=initializers))
@@ -49,12 +46,12 @@ history = model.fit(
     epochs=125,
     batch_size=32,
     callbacks=[
-        ModelCheckpoint('models/model_KSL2.keras', verbose=1, save_best_only=True, mode='auto'),
+        ModelCheckpoint('YOUR_MODEL', verbose=1, save_best_only=True, mode='auto'),
         ReduceLROnPlateau(factor=0.5, patience=50, verbose=1, mode='auto')
     ]
 )
 
-# 확인 코드
+
 fig, loss_ax = plt.subplots(figsize=(12, 5))
 acc_ax = loss_ax.twinx()
 
