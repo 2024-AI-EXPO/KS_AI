@@ -11,8 +11,10 @@ from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau
 os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 
-actions = ["YOUR", "ACTION"]
-path = "YOUR_DIR"
+actions = ["hello", "thanks", "sorry", "hate", "hungry",
+           "sick", "tired", "mind", "person", "think",
+           "friend", "school", "police", "rice", "bed"]
+path = "dataset_KSL"
 data = np.concatenate([np.load(path + f'/seq_{action}.npy') for action in actions], axis=0)
 
 x_data = data[:, :, :-1]
@@ -46,7 +48,7 @@ history = model.fit(
     epochs=125,
     batch_size=32,
     callbacks=[
-        ModelCheckpoint('YOUR_MODEL', verbose=1, save_best_only=True, mode='auto'),
+        ModelCheckpoint('models/test.keras', verbose=1, save_best_only=True, mode='auto'),
         ReduceLROnPlateau(factor=0.5, patience=50, verbose=1, mode='auto')
     ]
 )

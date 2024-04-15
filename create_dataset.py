@@ -4,8 +4,10 @@ import time
 import numpy as np
 import mediapipe as mp
 
-actions = ["YOUR", "ACTION"]
-seq_length = 10
+actions = ["hello", "thanks", "sorry", "hate", "hungry",
+           "sick", "tired", "mind", "person", "think",
+           "friend", "school", "police", "rice", "bed"]
+seq_length = 5
 secs_for_action = 30
 
 mp_hands = mp.solutions.hands
@@ -18,7 +20,7 @@ hands = mp_hands.Hands(
 
 cap = cv2.VideoCapture(0)
 
-file = "YOUR_DIR"
+file = "dataset_KSL"
 os.makedirs(file, exist_ok=True)
 
 while cap.isOpened():
@@ -37,7 +39,7 @@ while cap.isOpened():
             thickness=3
         )
         cv2.imshow("YOUR_FRAME_NAME", frame)
-        cv2.waitKey(6000)
+        cv2.waitKey(15000)
 
         start_time = time.time()
 
@@ -80,7 +82,7 @@ while cap.isOpened():
                     mp_drawing.draw_landmarks(frame, res, mp_hands.HAND_CONNECTIONS)
 
             cv2.imshow('YOUR_FRAME_NAME', frame)
-            if cv2.waitKey(1) == ord('q'):
+            if cv2.waitKey(10) == 32:
                 break
 
         data = np.array(data)
