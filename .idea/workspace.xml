@@ -4,32 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2bc15fb1-9862-42a7-aa00-d05b25cfaa50" name="Changes" comment="KSL 프로젝트">
+    <list default="true" id="2bc15fb1-9862-42a7-aa00-d05b25cfaa50" name="Changes" comment="KSL Project">
+      <change afterPath="$PROJECT_DIR$/models/KSL.keras" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/model_KSL.keras" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/test_KSL.keras" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/create_dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/create_dataset.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset_KSL/raw_friend.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset_KSL/raw_hate.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset_KSL/raw_hello.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset_KSL/raw_mind.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset_KSL/raw_person.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset_KSL/raw_school.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset_KSL/raw_sorry.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset_KSL/raw_thanks.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset_KSL/raw_thinking.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset_KSL/seq_friend.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset_KSL/seq_hate.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset_KSL/seq_hello.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset_KSL/seq_mind.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset_KSL/seq_person.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset_KSL/seq_school.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset_KSL/seq_sorry.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset_KSL/seq_thanks.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset_KSL/seq_thinking.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/model_KSL.keras" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/model_KSL2.keras" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/multi_create_dataset.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/train.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -94,13 +75,30 @@
       <option name="project" value="LOCAL" />
       <updated>1712921372526</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="KSL Project">
+      <option name="closed" value="true" />
+      <created>1713094447599</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1713094447599</updated>
+    </task>
+    <task id="LOCAL-00005" summary="KSL Project">
+      <option name="closed" value="true" />
+      <created>1713094577664</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1713094577664</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="파일 경로 변경" />
     <MESSAGE value="한글 표시" />
     <MESSAGE value="KSL 프로젝트" />
-    <option name="LAST_COMMIT_MESSAGE" value="KSL 프로젝트" />
+    <MESSAGE value="KSL Project" />
+    <option name="LAST_COMMIT_MESSAGE" value="KSL Project" />
   </component>
 </project>
