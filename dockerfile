@@ -1,12 +1,13 @@
 FROM python:3.10
 
+WORKDIR /ai
 
-WORKDIR /code
+COPY ./requirements.txt /test/requirements.txt
 
-COPY ./requirements.txt /code/requirements.txt
+RUN pip install --no-cache-dir --upgrade -r /test/requirements.txt
 
-RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+COPY ./app /ai/app
 
-#COPY /code/AI
- 
-#CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
+WORKDIR /test/myapp
+
+CMD ["uvicorn", "app.test:app", "--host", "0.0.0.0", "--port", "8000"]
