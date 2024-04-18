@@ -3,7 +3,7 @@ import mediapipe as mp
 import numpy as np
 from keras.models import load_model
 from PIL import ImageFont, ImageDraw, Image
-from fastapi import FastAPI, Response
+from fastapi import FastAPI, BackgroundTasks
 from fastapi.responses import StreamingResponse
 
 app = FastAPI()
@@ -23,6 +23,9 @@ hands = mp_hands.Hands(
     model_complexity=1
 )
 
+on_camera = False
+
+
 def draw_korean(image, org, text):
     img = Image.fromarray(image)
     draw = ImageDraw.Draw(img)
@@ -30,12 +33,13 @@ def draw_korean(image, org, text):
     draw.text(org, text, font=font, fill=(255, 255, 255))
     return np.array(img)
 
-def generate_frames():
+
+def generate_frames(camera):
     seq = []
     action_seq = []
     this_action = ''
     cap = cv2.VideoCapture(0)
-    while cap.isOpened():
+    while camera:
         ret, frame = cap.read()
 
         if not ret:
@@ -102,12 +106,24 @@ def generate_frames():
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
 
-    
     cap.release()
     cv2.destroyAllWindows()
 
-@app.get("/AI")
-async def stream_frames():
-    return StreamingResponse(generate_frames(), media_type="multipart/x-mixed-replace;boundary=frame")
 
+@app.on_event("startup")
+async def startup_camera():
+    global on_camera
+    on_camera = True
+
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    global on_camera
+    on_camera = False
+
+
+@app.get("/AI")
+async def stream_frames(background_tasks: BackgroundTasks):
+    background_tasks.add_task(generate_frames, on_camera)
+    return StreamingResponse(generate_frames(on_camera), media_type="multipart/x-mixed-replace;boundary=frame")
 

@@ -4,11 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2bc15fb1-9862-42a7-aa00-d05b25cfaa50" name="Changes" comment="KSL Project">
+    <list default="true" id="2bc15fb1-9862-42a7-aa00-d05b25cfaa50" name="Changes" comment="KSL 데이터 모두 추가">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/create_dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/create_dataset.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/train.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -103,7 +101,15 @@
       <option name="project" value="LOCAL" />
       <updated>1713094577664</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="KSL 데이터 모두 추가">
+      <option name="closed" value="true" />
+      <created>1713190140502</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1713190140502</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -111,6 +117,7 @@
     <MESSAGE value="한글 표시" />
     <MESSAGE value="KSL 프로젝트" />
     <MESSAGE value="KSL Project" />
-    <option name="LAST_COMMIT_MESSAGE" value="KSL Project" />
+    <MESSAGE value="KSL 데이터 모두 추가" />
+    <option name="LAST_COMMIT_MESSAGE" value="KSL 데이터 모두 추가" />
   </component>
 </project>
