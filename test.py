@@ -9,8 +9,8 @@ from fastapi.responses import StreamingResponse
 app = FastAPI()
 
 actions = ["안녕하세요", "감사합니다", "미안합니다", "싫어합니다", "배고프다",
-           "아프다", "졸리다", "마음", "휴먼", "생각",
-           "친구", "학교", "경찰관", "쌀밥", "침대"]
+           "아프다", "졸리다", "마음", "사람", "생각",
+           "친구", "학교", "경찰", "쌀밥", "침대"]
 seq_length = 5
 model = load_model('/Users/yabbi/Desktop/GitHub/KS_AI/models/test.keras')
 
@@ -39,6 +39,7 @@ def generate_frames(camera):
     action_seq = []
     this_action = ''
     cap = cv2.VideoCapture(0)
+    buf = ''
     while camera:
         ret, frame = cap.read()
 
@@ -99,6 +100,11 @@ def generate_frames(camera):
                 if action_seq[-1] == action_seq[-2] == action_seq[-3] == action_seq[-4]:
                     this_action = action
                     action_seq = []
+                    if this_action == '사람' and buf == '경찰':
+                        this_action = '경찰관'
+
+                    if this_action == "경찰":
+                        buf = this_action
 
         frame = draw_korean(frame, (80, 430), this_action)
         _, buffer = cv2.imencode('.jpg', frame)
@@ -108,8 +114,6 @@ def generate_frames(camera):
 
     cap.release()
     cv2.destroyAllWindows()
-
-
 
 
 @app.get("/AI")
