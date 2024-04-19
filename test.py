@@ -12,7 +12,7 @@ actions = ["안녕하세요", "감사합니다", "미안합니다", "싫어합�
            "아프다", "졸리다", "마음", "휴먼", "생각",
            "친구", "학교", "경찰관", "쌀밥", "침대"]
 seq_length = 5
-model = load_model('C:/Users/user/Downloads/KS_AI/models/test.keras')
+model = load_model('/Users/yabbi/Desktop/GitHub/KS_AI/models/test.keras')
 
 mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
@@ -110,20 +110,9 @@ def generate_frames(camera):
     cv2.destroyAllWindows()
 
 
-@app.on_event("startup")
-async def startup_camera():
-    global on_camera
-    on_camera = True
-
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    global on_camera
-    on_camera = False
 
 
 @app.get("/AI")
-async def stream_frames(background_tasks: BackgroundTasks):
-    background_tasks.add_task(generate_frames, on_camera)
+async def stream_frames():
     return StreamingResponse(generate_frames(on_camera), media_type="multipart/x-mixed-replace;boundary=frame")
 

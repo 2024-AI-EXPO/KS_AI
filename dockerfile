@@ -1,13 +1,14 @@
 FROM python:3.10
 
-WORKDIR /ai
+WORKDIR /code
 
 COPY ./requirements.txt /test/requirements.txt
 
 RUN pip install --no-cache-dir --upgrade -r /test/requirements.txt
+RUN apt-get update
+RUN apt-get -y install libgl1-mesa-glx
 
-COPY ./app /ai/app
 
-WORKDIR /test/myapp
+COPY ./test.py /code/
 
-CMD ["uvicorn", "app.test:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "test:app", "--host", "0.0.0.0", "--port", "8000"]
