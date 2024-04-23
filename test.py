@@ -5,6 +5,7 @@ from keras.models import load_model
 from PIL import ImageFont, ImageDraw, Image
 from fastapi import FastAPI, BackgroundTasks
 from fastapi.responses import StreamingResponse
+import uvicorn
 
 app = FastAPI()
 
@@ -23,24 +24,22 @@ hands = mp_hands.Hands(
     model_complexity=1
 )
 
-on_camera = False
-
 
 def draw_korean(image, org, text):
     img = Image.fromarray(image)
     draw = ImageDraw.Draw(img)
-    font = ImageFont.truetype('fonts/gulim.ttc', 40)
+    font = ImageFont.truetype('/Users/yabbi/Desktop/GitHub/KS_AI/gulim.ttc', 40)
     draw.text(org, text, font=font, fill=(255, 255, 255))
     return np.array(img)
 
 
-def generate_frames(camera):
+def generate_frames():
     seq = []
     action_seq = []
     this_action = ''
     cap = cv2.VideoCapture(0)
     buf = ''
-    while camera:
+    while cap.isOpened():
         ret, frame = cap.read()
 
         if not ret:
@@ -112,11 +111,15 @@ def generate_frames(camera):
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
 
-    cap.release()
-    cv2.destroyAllWindows()
 
 
 @app.get("/AI")
-async def stream_frames():
-    return StreamingResponse(generate_frames(on_camera), media_type="multipart/x-mixed-replace;boundary=frame")
+async def stream_frames(background_tasks: BackgroundTasks):
+    return StreamingResponse(generate_frames(), media_type="multipart/x-mixed-replace;boundary=frame")
 
+if __name__ == '__main__':
+    uvicorn.run(app ="test:app",
+                host="0.0.0.0",
+                port=5955,
+                reload=False,
+                workers=1)

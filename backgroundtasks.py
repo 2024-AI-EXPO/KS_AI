@@ -12,7 +12,7 @@ actions = ["안녕하세요", "감사합니다", "미안합니다", "싫어합�
            "아프다", "졸리다", "마음", "사람", "생각",
            "친구", "학교", "경찰", "쌀밥", "침대"]
 seq_length = 5
-model = load_model('models/test.keras')
+model = load_model('/Users/yabbi/Desktop/GitHub/KS_AI/models/test.keras')
 
 mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
@@ -29,7 +29,7 @@ on_camera = False
 def draw_korean(image, org, text):
     img = Image.fromarray(image)
     draw = ImageDraw.Draw(img)
-    font = ImageFont.truetype('fonts/gulim.ttc', 40)
+    font = ImageFont.truetype('/Users/yabbi/Desktop/GitHub/KS_AI/gulim.ttc', 40)
     draw.text(org, text, font=font, fill=(255, 255, 255))
     return np.array(img)
 
