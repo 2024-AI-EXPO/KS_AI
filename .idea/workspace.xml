@@ -4,14 +4,20 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2bc15fb1-9862-42a7-aa00-d05b25cfaa50" name="Changes" comment="KSL 데이터 모두 추가">
+    <list default="true" id="2bc15fb1-9862-42a7-aa00-d05b25cfaa50" name="Changes" comment="경찰관 코드 수정">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -30,6 +36,9 @@
       </UrlAndAccount>
     </option>
   </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 1
 }</component>
@@ -43,7 +52,7 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/user/Downloads/KS_AI&quot;
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/user/Downloads/AS_AI&quot;
   }
 }</component>
   <component name="RecentsManager">
@@ -109,7 +118,23 @@
       <option name="project" value="LOCAL" />
       <updated>1713190140502</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="카메라 api 수정">
+      <option name="closed" value="true" />
+      <created>1713422985100</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1713422985101</updated>
+    </task>
+    <task id="LOCAL-00008" summary="경찰관 코드 수정">
+      <option name="closed" value="true" />
+      <created>1713504152695</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1713504152695</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -118,6 +143,8 @@
     <MESSAGE value="KSL 프로젝트" />
     <MESSAGE value="KSL Project" />
     <MESSAGE value="KSL 데이터 모두 추가" />
-    <option name="LAST_COMMIT_MESSAGE" value="KSL 데이터 모두 추가" />
+    <MESSAGE value="카메라 api 수정" />
+    <MESSAGE value="경찰관 코드 수정" />
+    <option name="LAST_COMMIT_MESSAGE" value="경찰관 코드 수정" />
   </component>
 </project>
