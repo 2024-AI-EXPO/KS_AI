@@ -5,7 +5,7 @@ from keras.models import load_model
 from PIL import ImageFont, ImageDraw, Image
 from fastapi import FastAPI, BackgroundTasks
 from fastapi.responses import StreamingResponse
-
+import uvicorn
 app = FastAPI()
 
 actions = ["안녕하세요", "감사합니다", "미안합니다", "싫어합니다", "배고프다",
@@ -138,3 +138,10 @@ async def shot_down():
 async def stream_frames(backgroundtasks: BackgroundTasks):
     backgroundtasks.add_task(generate_frames, on_camera)
     return StreamingResponse(generate_frames(on_camera), media_type="multipart/x-mixed-replace;boundary=frame")
+
+if __name__ == '__main__':
+    uvicorn.run(app ="test:app",
+                host="0.0.0.0",
+                port=4292,
+                reload=False,
+                workers=1)
