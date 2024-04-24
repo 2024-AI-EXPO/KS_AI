@@ -48,7 +48,7 @@ history = model.fit(
     epochs=125,
     batch_size=32,
     callbacks=[
-        ModelCheckpoint('models/test.keras', verbose=1, save_best_only=True, mode='auto'),
+        ModelCheckpoint('models/KSL1.keras', verbose=1, save_best_only=True, mode='auto'),
         ReduceLROnPlateau(factor=0.5, patience=50, verbose=1, mode='auto')
     ]
 )
