@@ -140,7 +140,7 @@ async def stream_frames(backgroundtasks: BackgroundTasks):
     return StreamingResponse(generate_frames(on_camera), media_type="multipart/x-mixed-replace;boundary=frame")
 
 if __name__ == '__main__':
-    uvicorn.run(app ="test:app",
+    uvicorn.run(app ="backgroundtasks:app",
                 host="0.0.0.0",
                 port=4292,
                 reload=False,
