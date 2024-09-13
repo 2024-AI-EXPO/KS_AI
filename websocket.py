@@ -1,13 +1,13 @@
 # app.py
 import cv2
-import mediapipe as mp
 import numpy as np
 from keras.models import load_model
-from PIL import ImageFont, ImageDraw, Image
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
 import uvicorn
-
+from io import BytesIO
+from PIL import Image , ImageDraw ,ImageFont
+import mediapipe as mp
 app = FastAPI()
 
 # 액션 리스트 정의
@@ -30,7 +30,6 @@ hands = mp_hands.Hands(
     model_complexity=1
 )
 
-
 # 한글 텍스트를 영상에 그리는 함수
 def draw_korean(image, org, text):
     img = Image.fromarray(image)
@@ -43,23 +42,58 @@ def draw_korean(image, org, text):
 # HTML 클라이언트 페이지
 html = """
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebSocket Video Stream</title>
 </head>
 <body>
     <h1>WebSocket Video Stream</h1>
-    <img id="video" style="width: 640px; height: 480px;"/>
+    <video id="video" autoplay playsinline style="width: 640px; height: 480px;"></video>
     <script>
         let video = document.getElementById('video');
         let ws = new WebSocket('ws://localhost:8000/ws');
+
+        // 카메라 스트림 요청 및 오류 처리
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+                video.onloadedmetadata = () => {
+                    video.play();
+                    // 카메라 프레임 전송
+                    let canvas = document.createElement('canvas');
+                    let ctx = canvas.getContext('2d');
+
+                    setInterval(() => {
+                        canvas.width = video.videoWidth;
+                        canvas.height = video.videoHeight;
+                        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                        canvas.toBlob(blob => {
+                            if (ws.readyState === WebSocket.OPEN) {
+                                ws.send(blob);
+                            }
+                        }, 'image/jpeg');
+                    }, 100);
+                };
+            })
+            .catch(error => {
+                console.error("카메라 접근 실패:", error);
+                alert("카메라 접근에 실패했습니다. 브라우저 설정을 확인하세요.");
+            });
 
         ws.onmessage = function(event) {
             let reader = new FileReader();
             reader.readAsDataURL(event.data);
             reader.onloadend = function() {
-                video.src = reader.result;
-            }
+                let img = new Image();
+                img.src = reader.result;
+                img.onload = function() {
+                    video.srcObject = null;
+                    video.src = img.src;
+                };
+            };
         };
 
         ws.onclose = function() {
@@ -75,12 +109,10 @@ html = """
 async def get():
     return HTMLResponse(html)
 
-
 # WebSocket 연결 처리
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
-    cap = cv2.VideoCapture(0)
     seq = []
     action_seq = []
     this_action = ''
@@ -89,15 +121,16 @@ async def websocket_endpoint(websocket: WebSocket):
 
     try:
         while True:
-            ret, frame = cap.read()
+            # 바이트 데이터 수신
+            data = await websocket.receive_bytes()
 
-            if not ret:
-                break
+            # 바이트 데이터를 이미지로 변환
+            image = Image.open(BytesIO(data))
+            frame = np.array(image)
 
-            frame = cv2.flip(frame, 1)
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            result = hands.process(frame)
             frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+            result = hands.process(frame)
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
             # 손 랜드마크 처리
             if result.multi_hand_landmarks is not None:
@@ -106,7 +139,6 @@ async def websocket_endpoint(websocket: WebSocket):
                     for j, lm in enumerate(res.landmark):
                         joint[j] = [lm.x, lm.y, lm.z, lm.visibility]
 
-                    # 각도 계산을 위한 벡터화
                     v1 = joint[[0, 1, 2, 3, 0, 5, 6, 7, 0, 9, 10, 11, 0, 13, 14, 15, 0, 17, 18, 19], :3]
                     v2 = joint[[i for i in range(1, 21)], :3]
                     v = v2 - v1
@@ -124,8 +156,6 @@ async def websocket_endpoint(websocket: WebSocket):
 
                     d = np.concatenate([joint.flatten(), angle])
                     seq.append(d)
-
-                    mp_drawing.draw_landmarks(frame, res, mp_hands.HAND_CONNECTIONS)
 
                     if len(seq) < seq_length:
                         continue
@@ -169,10 +199,8 @@ async def websocket_endpoint(websocket: WebSocket):
             await websocket.send_bytes(frame_bytes)
 
     except WebSocketDisconnect:
-        cap.release()
         print("WebSocket connection closed")
     finally:
-        cap.release()
         cv2.destroyAllWindows()
 
 
