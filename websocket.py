@@ -1,4 +1,3 @@
-# app.py
 import cv2
 import numpy as np
 from keras.models import load_model
@@ -6,9 +5,23 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
 import uvicorn
 from io import BytesIO
-from PIL import Image , ImageDraw ,ImageFont
+from PIL import Image, ImageDraw, ImageFont
 import mediapipe as mp
+import asyncio
+import time
+from fastapi.middleware.cors import CORSMiddleware
+import os
+
+
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # 액션 리스트 정의
 actions = ["안녕하세요", "감사합니다", "미안합니다", "싫어합니다", "배고프다",
@@ -18,7 +31,7 @@ actions = ["안녕하세요", "감사합니다", "미안합니다", "싫어합�
 seq_length = 5
 
 # 학습된 모델 로드
-model = load_model('/Users/yabbi/Desktop/GitHub/KS_AI/models/KSL1.keras')
+model = load_model('models/KSL1.keras')
 
 # MediaPipe 설정
 mp_hands = mp.solutions.hands
@@ -27,17 +40,37 @@ hands = mp_hands.Hands(
     max_num_hands=2,
     min_detection_confidence=0.5,
     min_tracking_confidence=0.5,
-    model_complexity=1
+    model_complexity=0  # 성능 향상을 위해 모델 복잡도를 낮춤
 )
+
+# 폰트 로딩 함수
+def load_font(font_path, font_size):
+    try:
+        return ImageFont.truetype(font_path, font_size)
+    except OSError:
+        print(f"Warning: Could not load the specified font: {font_path}")
+        print("Attempting to load a default system font...")
+        try:
+            return ImageFont.truetype("C:/Windows/Fonts/malgun.ttf", font_size)
+        except OSError:
+            try:
+                return ImageFont.truetype("/System/Library/Fonts/AppleSDGothicNeo.ttc", font_size)
+            except OSError:
+                try:
+                    return ImageFont.truetype("/usr/share/fonts/truetype/nanum/NanumGothic.ttf", font_size)
+                except OSError:
+                    print("Error: Could not load any suitable font. Using default font.")
+                    return ImageFont.load_default()
+
+# 글로벌 폰트 객체
+font = load_font('gulim.ttc', 50)
 
 # 한글 텍스트를 영상에 그리는 함수
 def draw_korean(image, org, text):
     img = Image.fromarray(image)
     draw = ImageDraw.Draw(img)
-    font = ImageFont.truetype('/Users/yabbi/Desktop/GitHub/KS_AI/gulim.ttc', 100)
-    draw.text(org, text, font=font, fill=(0, 0, 0))
+    draw.text(org, text, font=font, fill=(255, 255, 255))
     return np.array(img)
-
 
 # HTML 클라이언트 페이지
 html = """
@@ -45,55 +78,46 @@ html = """
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebSocket Video Stream</title>
 </head>
 <body>
     <h1>WebSocket Video Stream</h1>
-    <video id="video" autoplay playsinline style="width: 640px; height: 480px;"></video>
+    <img id="video" style="width: 640px; height: 480px;">
     <script>
-        let video = document.getElementById('video');
-        let ws = new WebSocket('ws://localhost:8000/ws');
+        let img = document.getElementById('video');
+        let ws = new WebSocket('wss://192.168.1.35:8000/ws');
 
-        // 카메라 스트림 요청 및 오류 처리
-        navigator.mediaDevices.getUserMedia({ video: true })
+        navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 } })
             .then(stream => {
+                let video = document.createElement('video');
                 video.srcObject = stream;
                 video.onloadedmetadata = () => {
                     video.play();
-                    // 카메라 프레임 전송
-                    let canvas = document.createElement('canvas');
-                    let ctx = canvas.getContext('2d');
-
-                    setInterval(() => {
-                        canvas.width = video.videoWidth;
-                        canvas.height = video.videoHeight;
-                        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                        canvas.toBlob(blob => {
-                            if (ws.readyState === WebSocket.OPEN) {
-                                ws.send(blob);
-                            }
-                        }, 'image/jpeg');
-                    }, 100);
+                    sendFrame(video);
                 };
             })
             .catch(error => {
-                console.error("카메라 접근 실패:", error);
-                alert("카메라 접근에 실패했습니다. 브라우저 설정을 확인하세요.");
+                console.error("Camera access failed:", error);
+                alert("Failed to access the camera. Please check your browser settings.");
             });
 
+        function sendFrame(video) {
+            let canvas = document.createElement('canvas');
+            canvas.width = 320;
+            canvas.height = 240;
+            let ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, 320, 240);
+            canvas.toBlob(blob => {
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.send(blob);
+                }
+            }, 'image/jpeg', 0.5);
+            setTimeout(() => sendFrame(video), 100);
+        }
+
         ws.onmessage = function(event) {
-            let reader = new FileReader();
-            reader.readAsDataURL(event.data);
-            reader.onloadend = function() {
-                let img = new Image();
-                img.src = reader.result;
-                img.onload = function() {
-                    video.srcObject = null;
-                    video.src = img.src;
-                };
-            };
+            img.src = URL.createObjectURL(event.data);
         };
 
         ws.onclose = function() {
@@ -118,40 +142,45 @@ async def websocket_endpoint(websocket: WebSocket):
     this_action = ''
     buf = ''
     police = 0
+    last_process_time = time.time()
 
     try:
         while True:
-            # 바이트 데이터 수신
             data = await websocket.receive_bytes()
+
+            # 프레임 처리 간격 조절
+            current_time = time.time()
+            if current_time - last_process_time < 0.1:
+                continue
+            last_process_time = current_time
 
             # 바이트 데이터를 이미지로 변환
             image = Image.open(BytesIO(data))
-            frame = np.array(image)
+            frame = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
 
-            frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-            result = hands.process(frame)
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            # 손 감지 및 랜드마크 처리
+            image_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            results = hands.process(image_rgb)
 
-            # 손 랜드마크 처리
-            if result.multi_hand_landmarks is not None:
-                for res in result.multi_hand_landmarks:
+            if results.multi_hand_landmarks:
+                for hand_landmarks in results.multi_hand_landmarks:
+                    mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
+
+                    # 랜드마크 좌표 추출
                     joint = np.zeros((21, 4))
-                    for j, lm in enumerate(res.landmark):
+                    for j, lm in enumerate(hand_landmarks.landmark):
                         joint[j] = [lm.x, lm.y, lm.z, lm.visibility]
 
-                    v1 = joint[[0, 1, 2, 3, 0, 5, 6, 7, 0, 9, 10, 11, 0, 13, 14, 15, 0, 17, 18, 19], :3]
-                    v2 = joint[[i for i in range(1, 21)], :3]
+                    # 벡터 계산
+                    v1 = joint[[0,1,2,3,0,5,6,7,0,9,10,11,0,13,14,15,0,17,18,19], :3]
+                    v2 = joint[[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20], :3]
                     v = v2 - v1
                     v = v / np.linalg.norm(v, axis=1)[:, np.newaxis]
 
-                    angle = np.arccos(
-                        np.einsum(
-                            'nt,nt->n',
-                            v[[0, 1, 2, 4, 5, 6, 8, 9, 10, 12, 13, 14, 16, 17, 18], :],
-                            v[[1, 2, 3, 5, 6, 7, 9, 10, 11, 13, 14, 15, 17, 18, 19], :]
-                        )
-                    )
-
+                    # 각도 계산
+                    angle = np.arccos(np.einsum('nt,nt->n',
+                        v[[0,1,2,4,5,6,8,9,10,12,13,14,16,17,18],:], 
+                        v[[1,2,3,5,6,7,9,10,11,13,14,15,17,18,19],:]))
                     angle = np.degrees(angle)
 
                     d = np.concatenate([joint.flatten(), angle])
@@ -166,6 +195,7 @@ async def websocket_endpoint(websocket: WebSocket):
 
                     i_pred = int(np.argmax(y_pred))
                     conf = y_pred[i_pred]
+
                     if conf < 0.8:
                         continue
 
@@ -175,16 +205,18 @@ async def websocket_endpoint(websocket: WebSocket):
                     if len(action_seq) < 4:
                         continue
 
+                    this_action = '?'
                     if action_seq[-1] == action_seq[-2] == action_seq[-3] == action_seq[-4]:
                         this_action = action
-                        action_seq = []
-                        if buf == '경찰' and this_action == '사람':
-                            this_action = '경찰관'
 
-                        if this_action == "경찰":
-                            buf = this_action
+                    if buf == '경찰' and this_action == '사람':
+                        this_action = '경찰관'
 
-            frame = draw_korean(frame, (80, 430), this_action)
+                    if this_action == "경찰":
+                        buf = this_action
+
+            # 한글 텍스트로 액션을 화면에 표시
+            frame = draw_korean(frame, (40, 200), this_action)
             if this_action == '경찰관':
                 police += 1
                 if police >= 35:
@@ -192,17 +224,21 @@ async def websocket_endpoint(websocket: WebSocket):
                     police = 0
 
             # 프레임을 JPEG로 인코딩
-            _, buffer = cv2.imencode('.jpg', frame)
+            _, buffer = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 50])
             frame_bytes = buffer.tobytes()
 
             # WebSocket을 통해 프레임 전송
             await websocket.send_bytes(frame_bytes)
+
+            await asyncio.sleep(0.01)
 
     except WebSocketDisconnect:
         print("WebSocket connection closed")
     finally:
         cv2.destroyAllWindows()
 
+ssl_keyfile = os.getenv("ssl_keyfile")
+ssl_certfile = os.getenv("ssl_certfile")
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000 , ssl_keyfile = ssl_keyfile , ssl_certfile=ssl_certfile)
