@@ -1,7 +1,7 @@
-uvicorn==0.29.0
-fastapi==0.110.1
-mediapipe==0.10.9
-opencv-python==4.5.4.58
-pillow==10.3.0
+uvicorn
+fastapi
+mediapipe
+opencv-python
+pillow
 keras
-tensorflow
+numpy
