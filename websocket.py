@@ -10,10 +10,7 @@ import mediapipe as mp
 import asyncio
 import time
 from fastapi.middleware.cors import CORSMiddleware
-import os
-from dotenv import load_dotenv
 
-load_dotenv()
 
 app = FastAPI()
 
@@ -74,136 +71,7 @@ def draw_korean(image, org, text):
     draw.text(org, text, font=font, fill=(255, 255, 255))
     return np.array(img)
 
-# HTML 클라이언트 페이지
-html = """
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebSocket Video Stream</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-        }
-        #videoContainer {
-            display: flex;
-            justify-content: space-around;
-            width: 100%;
-            margin-top: 20px;
-        }
-        .videoWrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        video, img {
-            border: 1px solid #ddd;
-            margin-bottom: 10px;
-        }
-        #errorMessage {
-            color: red;
-            margin-top: 10px;
-            text-align: center;
-        }
-        #statusMessage {
-            color: green;
-            margin-top: 10px;
-            text-align: center;
-        }
-    </style>
-</head>
-<body>
-    <h1>WebSocket Video Stream</h1>
-    <div id="videoContainer">
-        <div class="videoWrapper">
-            <h2>Local Camera</h2>
-            <video id="localVideo" autoplay muted style="width: 320px; height: 240px;"></video>
-        </div>
-        <div class="videoWrapper">
-            <h2>Processed Stream</h2>
-            <img id="remoteVideo" style="width: 640px; height: 480px;">
-        </div>
-    </div>
-    <div id="errorMessage"></div>
-    <div id="statusMessage"></div>
-    <script>
-        const localVideo = document.getElementById('localVideo');
-        const remoteVideo = document.getElementById('remoteVideo');
-        const errorMessage = document.getElementById('errorMessage');
-        const statusMessage = document.getElementById('statusMessage');
-        
-        const serverAddress = https://192.168.1.31:8000;
-        let ws;
 
-        async function setupCamera() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 } });
-                localVideo.srcObject = stream;
-                await localVideo.play();
-                statusMessage.textContent = "Local camera started successfully.";
-                setupWebSocket();
-            } catch (error) {
-                console.error("Camera access failed:", error);
-                errorMessage.textContent = "Failed to access the camera. Please check your browser settings and permissions.";
-            }
-        }
-
-        function setupWebSocket() {
-            ws = new WebSocket(`wss://${serverAddress}/ws`);
-
-            ws.onopen = () => {
-                statusMessage.textContent += " WebSocket connected.";
-                sendFrame();
-            };
-
-            ws.onmessage = (event) => {
-                remoteVideo.src = URL.createObjectURL(event.data);
-            };
-
-            ws.onclose = () => {
-                statusMessage.textContent = "WebSocket closed. Reconnecting...";
-                setTimeout(setupWebSocket, 1000);
-            };
-
-            ws.onerror = (error) => {
-                console.error("WebSocket error:", error);
-                errorMessage.textContent = "WebSocket error occurred. Please check your connection.";
-            };
-        }
-
-        function sendFrame() {
-            if (ws.readyState === WebSocket.OPEN) {
-                const canvas = document.createElement('canvas');
-                canvas.width = 320;
-                canvas.height = 240;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(localVideo, 0, 0, 320, 240);
-                canvas.toBlob(
-                    (blob) => {
-                        ws.send(blob);
-                        setTimeout(sendFrame, 100);
-                    },
-                    'image/jpeg',
-                    0.5
-                );
-            }
-        }
-
-        window.onload = setupCamera;
-    </script>
-</body>
-</html>
-"""
-
-# HTML 페이지 반환
-@app.get("/")
-async def get():
-    return HTMLResponse(html)
 
 # WebSocket 연결 처리
 @app.websocket("/ws")
@@ -251,7 +119,7 @@ async def websocket_endpoint(websocket: WebSocket):
 
                     # 각도 계산
                     angle = np.arccos(np.einsum('nt,nt->n',
-                        v[[0,1,2,4,5,6,8,9,10,12,13,14,16,17,18],:], 
+                        v[[0,1,2,4,5,6,8,9,10,12,13,14,16,17,18],:],
                         v[[1,2,3,5,6,7,9,10,11,13,14,15,17,18,19],:]))
                     angle = np.degrees(angle)
 
@@ -309,8 +177,8 @@ async def websocket_endpoint(websocket: WebSocket):
     finally:
         cv2.destroyAllWindows()
 
-ssl_keyfile = os.getenv("SSL_KEYFILE")
-ssl_certfile = os.getenv("SSL_CERTFILE")
+# ssl_keyfile = os.getenv("SSL_KEYFILE")
+# ssl_certfile = os.getenv("SSL_CERTFILE")
 
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000, ssl_keyfile=ssl_keyfile, ssl_certfile=ssl_certfile)
+# if __name__ == "__main__":
+#     uvicorn.run(app, host="0.0.0.0", port=8000 )
