@@ -1,0 +1,7 @@
+config:
+  name: symbols
+  service_type: be
+  port: 8000
+  domain:
+    prod: symbols.xquare.app
+    stag: symbols-stag.xquare.app
