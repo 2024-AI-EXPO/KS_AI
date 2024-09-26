@@ -31,17 +31,19 @@ FROM --platform=linux/amd64 python:3.10-slim
 # Set the working directory
 WORKDIR /app
 
-# Copy the installed packages from the builder stage
-COPY --from=builder /usr/local/lib/python3.10/site-packages /usr/local/lib/python3.10/site-packages
+# Copy project files from the builder stage
+COPY --from=builder /app /app
 
-# Copy project files
-COPY . .
+# Install necessary system packages
+RUN apt-get update && apt-get install -y \
+    libglib2.0-0 \
+    libgl1-mesa-glx \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy font file to the appropriate path
-COPY gulim.ttc /usr/share/fonts/truetype/
-
-# Copy model files
-COPY models /app/models
+# Ensure uvicorn is installed in the final image
+COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
 # Expose port
 EXPOSE 8000
