@@ -34,6 +34,8 @@ WORKDIR /app
 # Copy project files from the builder stage
 COPY --from=builder /app /app
 
+COPY . .
+
 # Install necessary system packages
 RUN apt-get update && apt-get install -y \
     libglib2.0-0 \
