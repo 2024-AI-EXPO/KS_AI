@@ -1,9 +1,10 @@
-FROM python:3.10-slim
+# Stage 1: Build stage
+FROM --platform=linux/amd64 python:3.10-slim as builder
 
-# 작업 디렉토리 설정
+# Set the working directory
 WORKDIR /app
 
-# 필요한 시스템 패키지 설치
+# Install necessary system packages
 RUN apt-get update && apt-get install -y \
     python3-dev \
     libhdf5-dev \
@@ -17,22 +18,33 @@ RUN apt-get update && apt-get install -y \
     libgl1-mesa-glx \
     && rm -rf /var/lib/apt/lists/*
 
+# Copy the requirements file to the working directory
+COPY requirements.txt .
 
-# 프로젝트 파일 복사
-COPY . /app
-
-# 폰트 파일을 적절한 경로에 복사
-COPY gulim.ttc /usr/share/fonts/truetype/
-
-# 모델 파일 복사
-COPY models /app/models
-
-# 필요한 Python 패키지 설치
+# Install necessary Python packages
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# 포트 설정
+# Stage 2: Final stage
+FROM --platform=linux/amd64 python:3.10-slim
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the installed packages from the builder stage
+COPY --from=builder /usr/local/lib/python3.10/site-packages /usr/local/lib/python3.10/site-packages
+
+# Copy project files
+COPY . .
+
+# Copy font file to the appropriate path
+COPY gulim.ttc /usr/share/fonts/truetype/
+
+# Copy model files
+COPY models /app/models
+
+# Expose port
 EXPOSE 8000
 
-# FastAPI 앱 실행
+# Run the FastAPI app
 CMD ["uvicorn", "websocket:app", "--host", "0.0.0.0", "--port", "8000"]
