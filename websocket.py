@@ -89,7 +89,7 @@ async def websocket_endpoint(websocket: WebSocket):
 
             # 프레임 처리 간격 조절
             current_time = time.time()
-            if current_time - last_process_time < 0.1:
+            if current_time - last_process_time < 0.001:
                 continue
             last_process_time = current_time
 
@@ -169,7 +169,7 @@ async def websocket_endpoint(websocket: WebSocket):
             # WebSocket을 통해 프레임 전송
             await websocket.send_bytes(frame_bytes)
 
-            await asyncio.sleep(0.01)
+            await asyncio.sleep(0.0001)
 
     except WebSocketDisconnect:
         print("WebSocket connection closed")
