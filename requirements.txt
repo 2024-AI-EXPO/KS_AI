@@ -6,3 +6,4 @@ pillow
 keras
 numpy
 tensorflow
+websockets
