@@ -2,15 +2,12 @@ import cv2
 import numpy as np
 from keras.models import load_model
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from fastapi.responses import HTMLResponse
-import uvicorn
+from fastapi.middleware.cors import CORSMiddleware
+import time
+import asyncio
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont
 import mediapipe as mp
-import asyncio
-import time
-from fastapi.middleware.cors import CORSMiddleware
-
 
 app = FastAPI()
 
@@ -25,54 +22,33 @@ app.add_middleware(
 actions = ["안녕하세요", "감사합니다", "미안합니다", "싫어합니다", "배고프다",
            "아프다", "졸리다", "마음", "사람", "생각", "친구", "학교", "경찰", "쌀밥", "침대"]
 
-# 시퀀스 길이
 seq_length = 5
 
-# 학습된 모델 로드
 model = load_model('models/KSL1.keras')
 
-# MediaPipe 설정
 mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
 hands = mp_hands.Hands(
     max_num_hands=2,
-    min_detection_confidence=0.5,
-    min_tracking_confidence=0.5,
-    model_complexity=0  # 성능 향상을 위해 모델 복잡도를 낮춤
+    min_detection_confidence=0.3,
+    min_tracking_confidence=0.3,
+    model_complexity=0
 )
 
-# 폰트 로딩 함수
 def load_font(font_path, font_size):
     try:
         return ImageFont.truetype(font_path, font_size)
     except OSError:
-        print(f"Warning: Could not load the specified font: {font_path}")
-        print("Attempting to load a default system font...")
-        try:
-            return ImageFont.truetype("C:/Windows/Fonts/malgun.ttf", font_size)
-        except OSError:
-            try:
-                return ImageFont.truetype("/System/Library/Fonts/AppleSDGothicNeo.ttc", font_size)
-            except OSError:
-                try:
-                    return ImageFont.truetype("/usr/share/fonts/truetype/nanum/NanumGothic.ttf", font_size)
-                except OSError:
-                    print("Error: Could not load any suitable font. Using default font.")
-                    return ImageFont.load_default()
+        return ImageFont.load_default()
 
-# 글로벌 폰트 객체
 font = load_font('gulim.ttc', 50)
 
-# 한글 텍스트를 영상에 그리는 함수
 def draw_korean(image, org, text):
     img = Image.fromarray(image)
     draw = ImageDraw.Draw(img)
     draw.text(org, text, font=font, fill=(255, 255, 255))
     return np.array(img)
 
-
-
-# WebSocket 연결 처리
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
@@ -87,17 +63,14 @@ async def websocket_endpoint(websocket: WebSocket):
         while True:
             data = await websocket.receive_bytes()
 
-            # 프레임 처리 간격 조절
             current_time = time.time()
-            if current_time - last_process_time < 0.001:
+            if current_time - last_process_time < 0.05:
                 continue
             last_process_time = current_time
 
-            # 바이트 데이터를 이미지로 변환
             image = Image.open(BytesIO(data))
             frame = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
 
-            # 손 감지 및 랜드마크 처리
             image_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             results = hands.process(image_rgb)
 
@@ -105,18 +78,15 @@ async def websocket_endpoint(websocket: WebSocket):
                 for hand_landmarks in results.multi_hand_landmarks:
                     mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
 
-                    # 랜드마크 좌표 추출
                     joint = np.zeros((21, 4))
                     for j, lm in enumerate(hand_landmarks.landmark):
                         joint[j] = [lm.x, lm.y, lm.z, lm.visibility]
 
-                    # 벡터 계산
                     v1 = joint[[0,1,2,3,0,5,6,7,0,9,10,11,0,13,14,15,0,17,18,19], :3]
                     v2 = joint[[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20], :3]
                     v = v2 - v1
                     v = v / np.linalg.norm(v, axis=1)[:, np.newaxis]
 
-                    # 각도 계산
                     angle = np.arccos(np.einsum('nt,nt->n',
                         v[[0,1,2,4,5,6,8,9,10,12,13,14,16,17,18],:],
                         v[[1,2,3,5,6,7,9,10,11,13,14,15,17,18,19],:]))
@@ -129,7 +99,6 @@ async def websocket_endpoint(websocket: WebSocket):
                         continue
 
                     input_data = np.expand_dims(np.array(seq[-seq_length:], dtype=np.float32), axis=0)
-
                     y_pred = model.predict(input_data).squeeze()
 
                     i_pred = int(np.argmax(y_pred))
@@ -144,9 +113,10 @@ async def websocket_endpoint(websocket: WebSocket):
                     if len(action_seq) < 4:
                         continue
 
-                    this_action = '?'
                     if action_seq[-1] == action_seq[-2] == action_seq[-3] == action_seq[-4]:
                         this_action = action
+                    else:
+                        this_action = '?'
 
                     if buf == '경찰' and this_action == '사람':
                         this_action = '경찰관'
@@ -154,7 +124,6 @@ async def websocket_endpoint(websocket: WebSocket):
                     if this_action == "경찰":
                         buf = this_action
 
-            # 한글 텍스트로 액션을 화면에 표시
             frame = draw_korean(frame, (40, 200), this_action)
             if this_action == '경찰관':
                 police += 1
@@ -162,22 +131,12 @@ async def websocket_endpoint(websocket: WebSocket):
                     buf = ''
                     police = 0
 
-            # 프레임을 JPEG로 인코딩
             _, buffer = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 50])
             frame_bytes = buffer.tobytes()
 
-            # WebSocket을 통해 프레임 전송
             await websocket.send_bytes(frame_bytes)
-
-            await asyncio.sleep(0.0001)
 
     except WebSocketDisconnect:
         print("WebSocket connection closed")
     finally:
         cv2.destroyAllWindows()
-
-# ssl_keyfile = os.getenv("SSL_KEYFILE")
-# ssl_certfile = os.getenv("SSL_CERTFILE")
-
-# if __name__ == "__main__":
-#     uvicorn.run(app, host="0.0.0.0", port=8000 )
