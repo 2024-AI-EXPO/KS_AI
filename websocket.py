@@ -57,85 +57,84 @@ async def websocket_endpoint(websocket: WebSocket):
     this_action = ''
     buf = ''
     police = 0
-    last_process_time = time.time()
-
+    frame_count = 0
+    
     try:
         while True:
             data = await websocket.receive_bytes()
-
-            # current_time = time.time()
-            # if current_time - last_process_time < 0.05:
-            #     continue
-            # last_process_time = current_time
-
-            image = Image.open(BytesIO(data))
+            
+            frame_count += 1
+            if frame_count % 3 != 0:  # 3프레임마다 1번만 처리
+                continue
+            
+            image = Image.open(BytesIO(data)).resize((320, 240))  # 이미지 크기 축소
             frame = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
-
+            
             image_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             results = hands.process(image_rgb)
-
+            
             if results.multi_hand_landmarks:
                 for hand_landmarks in results.multi_hand_landmarks:
                     mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
-
-                    joint = np.zeros((21, 4))
-                    for j, lm in enumerate(hand_landmarks.landmark):
-                        joint[j] = [lm.x, lm.y, lm.z, lm.visibility]
-
-                    v1 = joint[[0,1,2,3,0,5,6,7,0,9,10,11,0,13,14,15,0,17,18,19], :3]
-                    v2 = joint[[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20], :3]
-                    v = v2 - v1
-                    v = v / np.linalg.norm(v, axis=1)[:, np.newaxis]
-
-                    angle = np.arccos(np.einsum('nt,nt->n',
-                        v[[0,1,2,4,5,6,8,9,10,12,13,14,16,17,18],:],
-                        v[[1,2,3,5,6,7,9,10,11,13,14,15,17,18,19],:]))
-                    angle = np.degrees(angle)
-
-                    d = np.concatenate([joint.flatten(), angle])
-                    seq.append(d)
-
-                    if len(seq) < seq_length:
-                        continue
-
-                    input_data = np.expand_dims(np.array(seq[-seq_length:], dtype=np.float32), axis=0)
-                    y_pred = model.predict(input_data).squeeze()
-
-                    i_pred = int(np.argmax(y_pred))
-                    conf = y_pred[i_pred]
-
-                    if conf < 0.8:
-                        continue
-
-                    action = actions[i_pred]
-                    action_seq.append(action)
-
-                    if len(action_seq) < 4:
-                        continue
-
-                    if action_seq[-1] == action_seq[-2] == action_seq[-3] == action_seq[-4]:
-                        this_action = action
-                    else:
-                        this_action = '?'
-
-                    if buf == '경찰' and this_action == '사람':
-                        this_action = '경찰관'
-
-                    if this_action == "경찰":
-                        buf = this_action
-
+                    
+                joint = np.zeros((21, 4))
+                for j, lm in enumerate(hand_landmarks.landmark):
+                    joint[j] = [lm.x, lm.y, lm.z, lm.visibility]
+                
+                v1 = joint[[0,1,2,3,0,5,6,7,0,9,10,11,0,13,14,15,0,17,18,19], :3]
+                v2 = joint[[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20], :3]
+                v = v2 - v1
+                v = v / np.linalg.norm(v, axis=1)[:, np.newaxis]
+                
+                angle = np.arccos(np.einsum('nt,nt->n',
+                    v[[0,1,2,4,5,6,8,9,10,12,13,14,16,17,18],:],
+                    v[[1,2,3,5,6,7,9,10,11,13,14,15,17,18,19],:]))
+                angle = np.degrees(angle)
+                
+                d = np.concatenate([joint.flatten(), angle])
+                seq.append(d)
+                
+                if len(seq) < seq_length:
+                    continue
+                
+                input_data = np.expand_dims(np.array(seq[-seq_length:], dtype=np.float32), axis=0)
+                y_pred = model.predict(input_data).squeeze()
+                
+                i_pred = int(np.argmax(y_pred))
+                conf = y_pred[i_pred]
+                
+                if conf < 0.8:
+                    continue
+                
+                action = actions[i_pred]
+                action_seq.append(action)
+                
+                if len(action_seq) < 4:
+                    continue
+                
+                if action_seq[-1] == action_seq[-2] == action_seq[-3] == action_seq[-4]:
+                    this_action = action
+                else:
+                    this_action = '?'
+                
+                if buf == '경찰' and this_action == '사람':
+                    this_action = '경찰관'
+                
+                if this_action == "경찰":
+                    buf = this_action
+            
             frame = draw_korean(frame, (40, 200), this_action)
             if this_action == '경찰관':
                 police += 1
                 if police >= 35:
                     buf = ''
                     police = 0
-
+            
             _, buffer = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 50])
             frame_bytes = buffer.tobytes()
-
+            
             await websocket.send_bytes(frame_bytes)
-
+    
     except WebSocketDisconnect:
         print("WebSocket connection closed")
     finally:
