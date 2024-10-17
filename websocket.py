@@ -63,10 +63,10 @@ async def websocket_endpoint(websocket: WebSocket):
         while True:
             data = await websocket.receive_bytes()
 
-            current_time = time.time()
-            if current_time - last_process_time < 0.05:
-                continue
-            last_process_time = current_time
+            # current_time = time.time()
+            # if current_time - last_process_time < 0.05:
+            #     continue
+            # last_process_time = current_time
 
             image = Image.open(BytesIO(data))
             frame = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
