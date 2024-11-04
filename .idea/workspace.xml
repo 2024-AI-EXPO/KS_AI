@@ -4,8 +4,29 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2bc15fb1-9862-42a7-aa00-d05b25cfaa50" name="Changes" comment="경찰관 코드 수정">
+    <list default="true" id="2bc15fb1-9862-42a7-aa00-d05b25cfaa50" name="Changes" comment="데이터 수집">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/create_dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/create_dataset.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset_KSL/seq_bed.npy" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset_KSL/seq_friend.npy" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset_KSL/seq_hate.npy" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset_KSL/seq_hello.npy" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset_KSL/seq_hungry.npy" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset_KSL/seq_mind.npy" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset_KSL/seq_person.npy" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset_KSL/seq_police.npy" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset_KSL/seq_rice.npy" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset_KSL/seq_school.npy" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset_KSL/seq_sick.npy" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset_KSL/seq_sorry.npy" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset_KSL/seq_thanks.npy" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset_KSL/seq_think.npy" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset_KSL/seq_tired.npy" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/KSL1.keras" beforeDir="false" afterPath="$PROJECT_DIR$/models/KSL1.keras" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_KSL.keras" beforeDir="false" afterPath="$PROJECT_DIR$/models/test_KSL.keras" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testing/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/testing/test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/train.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,6 +78,8 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\user\Downloads\KS_AI\models" />
+      <recent name="C:\Users\user\Downloads\KS_AI\testing" />
       <recent name="C:\Users\user\Downloads\KS_AI\Mediapipe-Test" />
       <recent name="C:\Users\user\Downloads\KS_AI" />
     </key>
@@ -134,7 +157,15 @@
       <option name="project" value="LOCAL" />
       <updated>1713504152695</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="데이터 수집">
+      <option name="closed" value="true" />
+      <created>1730628134492</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1730628134492</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -145,6 +176,7 @@
     <MESSAGE value="KSL 데이터 모두 추가" />
     <MESSAGE value="카메라 api 수정" />
     <MESSAGE value="경찰관 코드 수정" />
-    <option name="LAST_COMMIT_MESSAGE" value="경찰관 코드 수정" />
+    <MESSAGE value="데이터 수집" />
+    <option name="LAST_COMMIT_MESSAGE" value="데이터 수집" />
   </component>
 </project>
