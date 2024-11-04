@@ -1,14 +1,17 @@
 import cv2
+import time
 import mediapipe as mp
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 from keras.models import load_model
 
-actions = ["안녕하세요", "감사합니다", "미안합니다", "싫어합니다", "배고프다",
-           "아프다", "졸리다", "마음", "사람", "생각",
-           "친구", "학교", "경찰", "쌀밥", "침대"]
+actions = ["안녕하세요", "감사합니다", "죄송합니다", "너", "나",
+           "우리", "괜찮습니다", "배부르다", "배고프다", "넣다",
+           "울다", "슬프다", "훌륭하다", "인정", "아프다",
+           "감기", "힘들다", "알아듣다", "졸리다", "어색하다",
+           "쉽다", "싫어하다", "아깝다", "할 수 있다", "행복"]
 seq_length = 5
-model = load_model('../models/test_KSL.keras')
+model = load_model('../models/symbols-v2-2.keras')
 
 mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
@@ -19,14 +22,25 @@ hands = mp_hands.Hands(
     model_complexity=1
 )
 
+def draw_korean(image, org, text):
+    img = Image.fromarray(image)
+    draw = ImageDraw.Draw(img)
+    font = ImageFont.truetype('gulim.ttc', 40)
+    draw.text(org, text, font=font, fill=(0, 0, 0))
+    return np.array(img)
+
+
 def generate_frames():
     seq = []
+    text = " "
     cap = cv2.VideoCapture(0)
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
             break
-
+        h, w, _ = frame.shape
+        frame = cv2.resize(frame, (w*2, h*2))
+        frame = cv2.flip(frame, 1)
         result = hands.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
         if result.multi_hand_landmarks is not None:
             ld, rd = [], []
@@ -41,6 +55,7 @@ def generate_frames():
                 v2 = joint[[i for i in range(1, 21)], :3]
                 v = v2 - v1
                 vector_size = np.linalg.norm(v, axis=1)  # 벡터의 크기
+                v = v / vector_size[:, np.newaxis]
                 angle = np.arccos(
                     np.einsum(
                         'nt,nt->n',
@@ -49,6 +64,7 @@ def generate_frames():
                     )
                 )
                 angle = np.degrees(angle)
+
                 if handed.classification[0].label == 'Left':
                     l_vector.append(vector_size)
                     l_hl.append(res)
@@ -78,9 +94,10 @@ def generate_frames():
 
                 action = actions[i_pred]
                 print(conf, action)
-                text = action if conf >= 0.7 else "?"
-                cv2.putText(frame, text, (150, 240), cv2.FONT_HERSHEY_COMPLEX, 2, (0, 255, 0), 1)
+                if conf >= 0.9:
+                    text = action
 
+        frame = draw_korean(frame, (150, 240), text)
         cv2.imshow('', frame)
         if cv2.waitKey(100) == ord('q'):
             break
